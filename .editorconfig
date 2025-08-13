@@ -1,0 +1,87 @@
+# Configuración global
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
+
+# HTML
+[*.html]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# CSS
+[*.css]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# JavaScript
+[*.{js,jsx,test.js,test.jsx,spec.js,spec.jsx}]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# TypeScript
+[*.{ts,tsx,test.ts,test.tsx,spec.ts,spec.tsx}]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# PHP
+[*.php]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# SQL
+[*.sql]
+indent_style = space
+indent_size = 4
+
+# JSON
+[*.json,jsonc]
+indent_style = space
+indent_size = 2
+
+# AsciiDoc
+[*.adoc]
+indent_style = space
+indent_size = 4
+
+# Shell
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# Archivos .gitignore
+[.gitignore]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+# Archivos Vagrant
+[Vagrantfile]
+indent_style = space
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[docker-compose.yml]
+indent_style = space
+indent_size = 4

@@ -1,0 +1,29 @@
+{
+	"name": "2025_platzi_my-store",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"main": "dist/server.js",
+	"scripts": {
+		"ts": "tsc",
+		"ts-w": "tsc -w",
+		"start": "node .",
+		"start-w": "nodemon -q ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@types/cors": "^2.8.12",
+		"dotenv": "^16.0.3",
+		"express": "^5.1.0",
+		"express-validation": "^4.1.0",
+		"nodemon": "^3.1.7"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.0",
+		"@types/node": "^20.11.30",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.1.0"
+	}
+}
