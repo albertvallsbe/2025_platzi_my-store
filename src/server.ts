@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 import { app } from "./app.js";
-import { type AppError, errorHandler } from "./middlewares/errorHandler.js";
+import {
+	type AppError,
+	errorHandler,
+	boomErrorHandler,
+} from "./middlewares/errorHandler.js";
 
 import { Request, Response, NextFunction } from "express";
 
@@ -24,6 +28,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 	next(error);
 });
 
+app.use(boomErrorHandler);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

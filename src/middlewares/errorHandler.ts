@@ -1,7 +1,22 @@
 import express, { Request, Response, NextFunction } from "express";
+import type { Boom } from "@hapi/boom";
 export interface AppError extends Error {
 	statusCode?: number;
 }
+
+export const boomErrorHandler = (
+	error: any,
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	if (error && error.isBoom) {
+		const { output } = error as Boom;
+		res.status(output.statusCode).json(output.payload);
+	} else {
+		next(error);
+	}
+};
 
 export const errorHandler = (
 	error: AppError,
