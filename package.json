@@ -8,7 +8,8 @@
 		"ts": "tsc",
 		"ts-w": "tsc -w",
 		"start": "node .",
-		"start-w": "nodemon -q ."
+		"start-w": "nodemon -q .",
+		"build": "tsc -p tsconfig.json && node ."
 	},
 	"keywords": [],
 	"author": "",
