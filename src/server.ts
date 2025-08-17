@@ -1,15 +1,11 @@
 import dotenv from "dotenv";
-import { app } from "./app.js";
-import {
-	type AppError,
-	errorHandler,
-	boomErrorHandler,
-} from "./middlewares/errorHandler.js";
-
-import { Request, Response, NextFunction } from "express";
-
+import type { Request, Response, NextFunction } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import { app } from "./app.js";
+import { errorHandler, boomErrorHandler } from "./middlewares/errorHandler.js";
+import type { AppError } from "./types/types.js";
 
 dotenv.config();
 

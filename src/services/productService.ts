@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import type { Product } from "../types/types";
+import type { Product } from "../types/types.js";
 import Boom from "@hapi/boom";
 
 export class ProductsService {
@@ -56,12 +56,12 @@ export class ProductsService {
 			throw Boom.notFound("Product not found");
 		}
 
-		const updatedProduct = this.products[index];
-		this.products[index] = {
-			...updatedProduct,
+		const current = this.products[index]!;
+		const updatedProduct = {
+			...current,
 			...changes,
 		};
-		return this.products[index];
+		return updatedProduct;
 	}
 
 	async updatePut(id: string, data: Omit<Product, "id">): Promise<Product> {

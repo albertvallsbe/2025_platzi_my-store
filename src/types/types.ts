@@ -5,3 +5,9 @@ export interface Product {
 	image: string;
 	isBlock: boolean;
 }
+
+export type ReqProperty = "body" | "params" | "query" | "headers";
+
+export interface AppError extends Error {
+	statusCode?: number;
+}
