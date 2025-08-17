@@ -1,6 +1,7 @@
-import express, { Request, Response } from "express";
+import type { Request, Response } from "express";
+import { Router } from "express";
 
-export const categoriesRouter = express.Router();
+export const categoriesRouter = Router();
 
 categoriesRouter.get(
 	"/:categoryId/products/:productId",

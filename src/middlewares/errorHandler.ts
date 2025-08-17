@@ -1,8 +1,7 @@
-import express, { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import type { Boom } from "@hapi/boom";
-export interface AppError extends Error {
-	statusCode?: number;
-}
+
+import type { AppError } from "../types/types.js";
 
 export const boomErrorHandler = (
 	error: any,

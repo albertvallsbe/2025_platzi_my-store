@@ -1,6 +1,7 @@
-import express, { Request, Response } from "express";
+import type { Request, Response } from "express";
+import { Router } from "express";
 
-export const usersRouter = express.Router();
+export const usersRouter = Router();
 
 usersRouter.get("/", (req: Request, res: Response) => {
 	const { limit, offset } = req.query;
