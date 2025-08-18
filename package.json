@@ -5,11 +5,10 @@
 	"type": "module",
 	"main": "dist/server.js",
 	"scripts": {
-		"ts": "tsc",
-		"ts-w": "tsc -w",
+		"build": "tsc",
+		"build-w": "tsc -w",
 		"start": "node .",
-		"start-w": "nodemon -q .",
-		"build": "tsc -p tsconfig.json && node ."
+		"start-w": "nodemon -q ."
 	},
 	"keywords": [],
 	"author": "",

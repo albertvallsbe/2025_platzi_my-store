@@ -15,6 +15,7 @@ const whitelist: string[] = [
 	"http://127.0.0.1:3100",
 	"http://localhost:5500",
 	"http://127.0.0.1:5500",
+	"https://2025-platzi-mystore.up.railway.app",
 ];
 
 const options: CorsOptions = {
