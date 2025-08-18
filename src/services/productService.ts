@@ -61,7 +61,10 @@ export class ProductsService {
 			...current,
 			...changes,
 		};
-		return updatedProduct;
+
+		this.products[index] = updatedProduct;
+
+		return this.products[index];
 	}
 
 	async updatePut(id: string, data: Omit<Product, "id">): Promise<Product> {
