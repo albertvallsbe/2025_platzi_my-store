@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 
 import { ProductsService } from "../services/productService.js";
@@ -13,14 +13,18 @@ import {
 export const productsRouter = Router();
 const service = new ProductsService();
 
-productsRouter.get("/", async (req: Request, res: Response) => {
-	const products = await service.find();
-	res.json(products);
-});
+productsRouter.get(
+	"/",
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const products = await service.find();
 
-productsRouter.get("/filter", async (req: Request, res: Response) => {
-	res.send("I'm a filter");
-});
+			return res.json(products);
+		} catch (error) {
+			return next(error);
+		}
+	}
+);
 
 productsRouter.get(
 	"/:id",
@@ -31,7 +35,9 @@ productsRouter.get(
 			if (!id) {
 				return res.status(400).json({ message: "Missing id param" });
 			}
+
 			const product = await service.findById(id);
+
 			return res.status(200).json(product);
 		} catch (error) {
 			return next(error);
@@ -42,11 +48,15 @@ productsRouter.get(
 productsRouter.post(
 	"/",
 	validatorHandler(createProductSchema, "body"),
-	async (req: Request, res: Response) => {
-		const body = req.body;
-		const newProduct = await service.create(body);
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const body = req.body;
+			const newProduct = await service.create(body);
 
-		res.status(201).json(newProduct);
+			return res.status(201).json(newProduct);
+		} catch (error) {
+			return next(error);
+		}
 	}
 );
 
@@ -60,8 +70,10 @@ productsRouter.patch(
 			if (!id) {
 				return res.status(400).json({ message: "Missing id param" });
 			}
+
 			const body = req.body;
 			const product = await service.updatePatch(id, body);
+
 			return res.json(product);
 		} catch (error) {
 			return next(error);
@@ -106,13 +118,16 @@ productsRouter.put(
 
 productsRouter.delete(
 	"/:id",
+	validatorHandler(getProductSchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
 			if (!id) {
 				return res.status(400).json({ message: "Missing id param" });
 			}
+
 			const product = await service.deleteById(id);
+
 			return res.status(204).json(product);
 		} catch (error) {
 			return next(error);
