@@ -9,6 +9,9 @@ export interface UserAttributes {
 	id: number;
 	email: string;
 	password: string;
+	name: string;
+	firstSurname: string;
+	secondSurname: string;
 	role: UserRole;
 	createdAt: Date;
 	updatedAt: Date;
@@ -26,6 +29,9 @@ export class User
 	public id!: number;
 	public email!: string;
 	public password!: string;
+	public name!: string;
+	public firstSurname!: string;
+	public secondSurname!: string;
 	public role!: UserRole;
 	public createdAt!: Date;
 	public updatedAt!: Date;
@@ -60,6 +66,24 @@ export const UserSchema: ModelAttributes<User, UserAttributes> = {
 	password: {
 		allowNull: false,
 		type: DataTypes.STRING,
+	},
+	name: {
+		allowNull: false,
+		type: DataTypes.STRING,
+		field: "name",
+		unique: false,
+	},
+	firstSurname: {
+		allowNull: false,
+		type: DataTypes.STRING,
+		field: "first_surname",
+		unique: false,
+	},
+	secondSurname: {
+		allowNull: true,
+		type: DataTypes.STRING,
+		field: "second_surname",
+		unique: false,
 	},
 	role: {
 		allowNull: false,

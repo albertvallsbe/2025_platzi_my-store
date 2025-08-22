@@ -1,16 +1,16 @@
 import { faker } from "@faker-js/faker";
 import type { User as UserApp } from "../types/types.js";
 import { User as UserModel } from "../db/models/user.model.js";
-// import Boom from "@hapi/boom";
+import Boom from "@hapi/boom";
 
-import { sequelize } from "../libs/sequalize.js";
-import { QueryTypes } from "sequelize";
+// import { sequelize } from "../libs/sequelize.js";
+// import { QueryTypes } from "sequelize";
 
-type Task = {
-	id: string | number;
-	title: string;
-	completed: boolean;
-};
+// type Task = {
+// 	id: string | number;
+// 	title: string;
+// 	completed: boolean;
+// };
 
 export class UserService {
 	private users: Omit<UserApp, "id">[] = [];
@@ -25,6 +25,9 @@ export class UserService {
 			this.users.push({
 				email: faker.internet.email(),
 				password: faker.internet.password({ length: 12 }),
+				name: faker.person.firstName(),
+				firstSurname: faker.person.lastName(),
+				secondSurname: faker.person.lastName(),
 				role: faker.helpers.arrayElement(["admin", "customer", "seller"]),
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -33,17 +36,18 @@ export class UserService {
 	}
 
 	async create(data: Omit<UserApp, "id">) {
-		return data;
+		const newUser = await UserModel.create(data);
+		return newUser;
 	}
 
-	async findTasks(): Promise<Task[]> {
-		const query = "SELECT * FROM tasks";
+	// async findTasks(): Promise<Task[]> {
+	// 	const query = "SELECT * FROM tasks";
 
-		const rows = await sequelize.query<Task>(query, {
-			type: QueryTypes.SELECT,
-		});
-		return rows;
-	}
+	// 	const rows = await sequelize.query<Task>(query, {
+	// 		type: QueryTypes.SELECT,
+	// 	});
+	// 	return rows;
+	// }
 
 	async find(): Promise<UserApp[]> {
 		// const users = await sequelize.User.findAll();
@@ -51,18 +55,36 @@ export class UserService {
 		return users as UserApp[];
 	}
 
-	async findById(id: string) {
-		return { id };
+	async findById(id: string): Promise<UserApp> {
+		const user = await UserModel.findByPk(id);
+		if (!user) {
+			throw Boom.notFound(`User ${id} not found`);
+		}
+
+		return user.toJSON() as UserApp;
 	}
 
-	async updatePatch(id: string, changes: Partial<Omit<UserApp, "id">>) {
-		return {
-			id,
-			changes,
-		};
+	async updatePatch(
+		id: string,
+		changes: Partial<Omit<UserApp, "id">>
+	): Promise<UserApp> {
+		const user = await UserModel.findByPk(id);
+		if (!user) {
+			throw Boom.notFound(`User ${id} not found`);
+		}
+
+		const updatedUser = await user.update(changes);
+
+		return updatedUser.toJSON() as UserApp;
 	}
 
 	async deleteById(id: string) {
+		const user = await UserModel.findByPk(id);
+		if (!user) {
+			throw Boom.notFound(`User ${id} not found`);
+		}
+
+		await user.destroy();
 		return { id };
 	}
 }

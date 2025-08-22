@@ -17,6 +17,9 @@ export interface User {
 	id: number;
 	email: string;
 	password: string;
+	name: string;
+	firstSurname: string;
+	secondSurname: string;
 	role: UserRole;
 	createdAt: Date;
 	updatedAt: Date;

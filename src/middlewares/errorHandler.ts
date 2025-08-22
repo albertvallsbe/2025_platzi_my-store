@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { Boom } from "@hapi/boom";
+import { ValidationError } from "sequelize";
 
 import type { AppError } from "../types/types.js";
 
@@ -39,4 +40,20 @@ export const errorHandler = (
 		message,
 		...(process.env.NODE_ENV === "development" && { stack: error.stack }),
 	});
+};
+
+export const ormErrorHandler = (
+	error: AppError,
+	req: Request,
+	res: Response,
+	next: NextFunction
+) => {
+	if (error instanceof ValidationError) {
+		res.status(409).json({
+			statusCode: 409,
+			message: error.name,
+			errors: error.errors,
+		});
+	}
+	next(error);
 };

@@ -24,4 +24,11 @@ const safeURI = `${u.protocol}//${u.username}:***@${u.host}${u.pathname}`;
 console.log("[DB URI]", safeURI);
 
 setupModels(sequelize);
-sequelize.sync({ alter: true });
+// sequelize.sync({ alter: true });
+
+// Development
+console.log("[Models]", Object.keys(sequelize.models));
+await sequelize
+	.authenticate()
+	.then(() => console.log("[DB] OK"))
+	.catch(console.error);
