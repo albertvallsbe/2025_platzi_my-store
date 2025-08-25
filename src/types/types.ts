@@ -1,9 +1,11 @@
 export interface Product {
-	id: string;
+	id: number;
 	name: string;
 	price: number;
 	image: string;
 	isBlock: boolean;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 export interface Category {
@@ -17,10 +19,18 @@ export interface User {
 	id: number;
 	email: string;
 	password: string;
+	role: UserRole;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Customer {
+	id: number;
 	name: string;
 	firstSurname: string;
 	secondSurname: string;
-	role: UserRole;
+	phone: string;
+	userId: number;
 	createdAt: Date;
 	updatedAt: Date;
 }

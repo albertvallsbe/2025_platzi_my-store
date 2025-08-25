@@ -1,32 +1,33 @@
 import type { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 
-import { CategoryService } from "../services/categoryService.js";
+import { CustomerService } from "../services/customerService.js";
 import { validatorHandler } from "../middlewares/validatorHandler.js";
 import {
-	getCategorySchema,
-	createCategorySchema,
-	updateCategorySchema,
-} from "../schemas/categorySchema.js";
+	getCustomerSchema,
+	createCustomerSchema,
+	updateCustomerSchema,
+} from "../schemas/customerSchema.js";
 
-export const categoriesRouter = Router();
-const service = new CategoryService();
+export const customersRouter = Router();
+const service = new CustomerService();
 
-categoriesRouter.get(
+customersRouter.get(
 	"/",
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const categories = await service.find();
-			return res.json(categories);
+			const customers = await service.find();
+
+			return res.json(customers);
 		} catch (error) {
 			return next(error);
 		}
 	}
 );
 
-categoriesRouter.get(
+customersRouter.get(
 	"/:id",
-	validatorHandler(getCategorySchema, "params"),
+	validatorHandler(getCustomerSchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
@@ -34,34 +35,34 @@ categoriesRouter.get(
 				return res.status(400).json({ message: "Missing id param" });
 			}
 
-			const category = await service.findById(id);
+			const customer = await service.findById(id);
 
-			return res.status(200).json(category);
+			return res.status(200).json(customer);
 		} catch (error) {
 			return next(error);
 		}
 	}
 );
 
-categoriesRouter.post(
+customersRouter.post(
 	"/",
-	validatorHandler(createCategorySchema, "body"),
+	validatorHandler(createCustomerSchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const body = req.body;
-			const newCategory = await service.create(body);
+			const newCustomer = await service.create(body);
 
-			return res.status(201).json(newCategory);
+			return res.status(201).json(newCustomer);
 		} catch (error) {
 			return next(error);
 		}
 	}
 );
 
-categoriesRouter.patch(
+customersRouter.patch(
 	"/:id",
-	validatorHandler(getCategorySchema, "params"),
-	validatorHandler(updateCategorySchema, "body"),
+	validatorHandler(getCustomerSchema, "params"),
+	validatorHandler(updateCustomerSchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
@@ -70,18 +71,18 @@ categoriesRouter.patch(
 			}
 
 			const body = req.body;
-			const category = await service.updatePatch(id, body);
+			const customer = await service.updatePatch(id, body);
 
-			return res.json(category);
+			return res.json(customer);
 		} catch (error) {
 			return next(error);
 		}
 	}
 );
 
-categoriesRouter.delete(
+customersRouter.delete(
 	"/:id",
-	validatorHandler(getCategorySchema, "params"),
+	validatorHandler(getCustomerSchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
@@ -89,9 +90,9 @@ categoriesRouter.delete(
 				return res.status(400).json({ message: "Missing id param" });
 			}
 
-			const category = await service.deleteById(id);
+			const customer = await service.deleteById(id);
 
-			return res.status(204).json(category);
+			return res.status(204).json(customer);
 		} catch (error) {
 			return next(error);
 		}

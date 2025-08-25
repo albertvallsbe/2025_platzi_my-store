@@ -3,7 +3,7 @@ import type { Category } from "../types/types.js";
 // import Boom from "@hapi/boom";
 
 export class CategoryService {
-	private categories: Category[] = [];
+	private categories: Omit<Category, "id">[] = [];
 
 	constructor() {
 		this.generate();
@@ -13,7 +13,6 @@ export class CategoryService {
 		const limit = 12;
 		for (let index = 0; index < limit; index++) {
 			this.categories.push({
-				id: faker.string.uuid(),
 				name: faker.commerce.productName(),
 				image: faker.image.url(),
 			});

@@ -1,13 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 
-import { UserService } from "../services/userServices.js";
+import { UserService } from "../services/userService.js";
 import { validatorHandler } from "../middlewares/validatorHandler.js";
 import {
 	getUserSchema,
 	createUserSchema,
 	updateUserSchema,
-} from "../schemas/user.schemas.js";
+} from "../schemas/userSchema.js";
 
 export const usersRouter = Router();
 const service = new UserService();

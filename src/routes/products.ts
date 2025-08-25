@@ -7,8 +7,8 @@ import {
 	getProductSchema,
 	createProductSchema,
 	updateProductSchema,
-	replaceProductSchema,
-} from "../schemas/product.schema.js";
+	// replaceProductSchema,
+} from "../schemas/productSchema.js";
 
 export const productsRouter = Router();
 const service = new ProductsService();
@@ -81,40 +81,40 @@ productsRouter.patch(
 	}
 );
 
-productsRouter.put(
-	"/:id",
-	validatorHandler(getProductSchema, "params"),
-	validatorHandler(replaceProductSchema, "body"),
-	async (req: Request, res: Response, next: NextFunction) => {
-		try {
-			const id = req.params.id;
-			if (!id) {
-				return res.status(400).json({ message: "Missing id param" });
-			}
-			const { name, price, image, isBlock } = req.body ?? {};
-			if (
-				typeof name !== "string" ||
-				typeof image !== "string" ||
-				typeof price !== "number" ||
-				typeof isBlock !== "boolean"
-			) {
-				return res.status(400).json({
-					message:
-						"Invalid body: { name:string, price:number, image:string, isBlock:boolean } required",
-				});
-			}
-			const productUpdated = await service.updatePut(id, {
-				name,
-				price,
-				image,
-				isBlock,
-			});
-			return res.json(productUpdated);
-		} catch (error) {
-			return next(error);
-		}
-	}
-);
+// productsRouter.put(
+// 	"/:id",
+// 	validatorHandler(getProductSchema, "params"),
+// 	validatorHandler(replaceProductSchema, "body"),
+// 	async (req: Request, res: Response, next: NextFunction) => {
+// 		try {
+// 			const id = req.params.id;
+// 			if (!id) {
+// 				return res.status(400).json({ message: "Missing id param" });
+// 			}
+// 			const { name, price, image, isBlock } = req.body ?? {};
+// 			if (
+// 				typeof name !== "string" ||
+// 				typeof image !== "string" ||
+// 				typeof price !== "number" ||
+// 				typeof isBlock !== "boolean"
+// 			) {
+// 				return res.status(400).json({
+// 					message:
+// 						"Invalid body: { name:string, price:number, image:string, isBlock:boolean } required",
+// 				});
+// 			}
+// 			const productUpdated = await service.updatePut(id, {
+// 				name,
+// 				price,
+// 				image,
+// 				isBlock,
+// 			});
+// 			return res.json(productUpdated);
+// 		} catch (error) {
+// 			return next(error);
+// 		}
+// 	}
+// );
 
 productsRouter.delete(
 	"/:id",

@@ -40,6 +40,7 @@ export const errorHandler = (
 		message,
 		...(process.env.NODE_ENV === "development" && { stack: error.stack }),
 	});
+	next(error);
 };
 
 export const ormErrorHandler = (

@@ -1,5 +1,4 @@
 import { Sequelize } from "sequelize";
-
 import { config } from "../config/config.js";
 import { setupModels } from "../db/models/index.js";
 
@@ -25,6 +24,10 @@ console.log("[DB URI]", safeURI);
 
 setupModels(sequelize);
 // sequelize.sync({ alter: true });
+
+// Exportacions
+export const models = sequelize.models;
+export type DBModels = typeof sequelize.models;
 
 // Development
 console.log("[Models]", Object.keys(sequelize.models));
