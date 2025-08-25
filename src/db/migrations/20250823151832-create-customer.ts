@@ -27,16 +27,16 @@ export default {
 				unique: false,
 			},
 			second_surname: {
-				allowNull: true,
+				allowNull: false,
 				type: Sequelize.STRING,
 				unique: false,
 			},
 			phone: {
-				allowNull: true,
+				allowNull: false,
 				type: Sequelize.STRING,
 			},
 			user_id: {
-				allowNull: true,
+				allowNull: false,
 				type: Sequelize.INTEGER,
 				unique: true,
 				references: {

@@ -26,7 +26,7 @@ export class CustomerService {
 					firstSurname: faker.person.lastName(),
 					secondSurname: faker.person.lastName(),
 					phone: faker.phone.number(),
-					userId: faker.number.int({ min: 1, max: 1_000_000 }),
+					userId: faker.number.int({ min: 1, max: 100000 }),
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});

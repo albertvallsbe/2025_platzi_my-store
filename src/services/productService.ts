@@ -23,8 +23,10 @@ export class ProductsService {
 				this.products.push({
 					name: faker.commerce.productName(),
 					price: Math.round(Number(faker.commerce.price({ min: 5, max: 500 }))),
+					description: faker.commerce.productDescription(),
 					image: faker.image.url(),
 					isBlock: faker.datatype.boolean(),
+					categoryId: faker.number.int({ min: 1, max: 100000 }),
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				});

@@ -17,6 +17,7 @@ categoriesRouter.get(
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const categories = await service.find();
+
 			return res.json(categories);
 		} catch (error) {
 			return next(error);

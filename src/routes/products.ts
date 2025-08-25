@@ -134,3 +134,15 @@ productsRouter.delete(
 		}
 	}
 );
+
+productsRouter.post(
+	"/seed",
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			await service.generate();
+			return res.status(201).json({ message: "Seed ok" });
+		} catch (error) {
+			return next(error);
+		}
+	}
+);

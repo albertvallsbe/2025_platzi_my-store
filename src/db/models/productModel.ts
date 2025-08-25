@@ -2,6 +2,8 @@ import { Model, DataTypes, Sequelize } from "sequelize";
 import type { Optional, ModelAttributes } from "sequelize";
 
 import type { Product as ProductType } from "../../types/types.js";
+
+import { CATEGORY_TABLE } from "./categoryModel.js";
 export const PRODUCT_TABLE = "products";
 
 export type ProductCreationAttributes = Optional<
@@ -16,16 +18,18 @@ export class Product
 	declare id: number;
 	declare name: string;
 	declare price: number;
+	declare description: string;
 	declare image: string;
 	declare isBlock: boolean;
+	declare categoryId: number;
 	declare createdAt: Date;
 	declare updatedAt: Date;
 
 	static associate(models: Sequelize["models"]) {
-		const { Customer } = models as {
-			Customer: typeof import("./customerModel.js").Customer;
+		const { Category } = models as {
+			Category: typeof import("./categoryModel.js").Category;
 		};
-		this.hasOne(Customer, { as: "customer", foreignKey: "userId" });
+		this.belongsTo(Category, { as: "category", foreignKey: "productId" });
 	}
 
 	static config(sequelize: Sequelize) {
@@ -54,6 +58,10 @@ export const ProductSchema: ModelAttributes<Product, ProductType> = {
 		type: DataTypes.DECIMAL(10, 2),
 		allowNull: false,
 	},
+	description: {
+		type: DataTypes.STRING,
+		allowNull: false,
+	},
 	image: {
 		type: DataTypes.STRING,
 		allowNull: false,
@@ -63,6 +71,17 @@ export const ProductSchema: ModelAttributes<Product, ProductType> = {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
 		defaultValue: false,
+	},
+	categoryId: {
+		field: "category_id",
+		allowNull: false,
+		type: DataTypes.INTEGER,
+		references: {
+			model: CATEGORY_TABLE,
+			key: "id",
+		},
+		onUpdate: "CASCADE",
+		onDelete: "SET NULL",
 	},
 	createdAt: {
 		type: DataTypes.DATE,

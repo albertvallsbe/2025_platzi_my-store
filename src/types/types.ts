@@ -1,19 +1,3 @@
-export interface Product {
-	id: number;
-	name: string;
-	price: number;
-	image: string;
-	isBlock: boolean;
-	createdAt: Date;
-	updatedAt: Date;
-}
-
-export interface Category {
-	id: string;
-	name: string;
-	image: string;
-}
-
 export type UserRole = "admin" | "customer" | "seller";
 export interface User {
 	id: number;
@@ -31,6 +15,25 @@ export interface Customer {
 	secondSurname: string;
 	phone: string;
 	userId: number;
+	createdAt: Date;
+	updatedAt: Date;
+}
+export interface Category {
+	id: number;
+	name: string;
+	image: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
+export interface Product {
+	id: number;
+	name: string;
+	price: number;
+	description: string;
+	image: string;
+	isBlock: boolean;
+	categoryId: number;
 	createdAt: Date;
 	updatedAt: Date;
 }

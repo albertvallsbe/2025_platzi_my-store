@@ -15,6 +15,8 @@ export class CategoryService {
 			this.categories.push({
 				name: faker.commerce.productName(),
 				image: faker.image.url(),
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			});
 		}
 	}

@@ -20,9 +20,9 @@ export class Customer
 	declare firstSurname: string;
 	declare secondSurname: string;
 	declare phone: string;
+	declare userId: number;
 	declare createdAt: Date;
 	declare updatedAt: Date;
-	declare userId: number;
 
 	static associate(models: Sequelize["models"]) {
 		const { User } = models as { User: typeof import("./userModel.js").User };
