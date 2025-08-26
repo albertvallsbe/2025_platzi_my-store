@@ -11,7 +11,12 @@ export default {
 	},
 
 	async down(queryInterface: QueryInterface): Promise<void> {
-		await queryInterface.dropTable(CATEGORY_TABLE);
+		await queryInterface.removeConstraint(
+			PRODUCT_TABLE,
+			"products_category_id_fkey"
+		);
+
 		await queryInterface.dropTable(PRODUCT_TABLE);
+		await queryInterface.dropTable(CATEGORY_TABLE);
 	},
 };

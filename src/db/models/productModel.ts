@@ -29,7 +29,7 @@ export class Product
 		const { Category } = models as {
 			Category: typeof import("./categoryModel.js").Category;
 		};
-		this.belongsTo(Category, { as: "category", foreignKey: "productId" });
+		this.belongsTo(Category, { as: "category", foreignKey: "categoryId" });
 	}
 
 	static config(sequelize: Sequelize) {
@@ -74,7 +74,7 @@ export const ProductSchema: ModelAttributes<Product, ProductType> = {
 	},
 	categoryId: {
 		field: "category_id",
-		allowNull: false,
+		allowNull: true,
 		type: DataTypes.INTEGER,
 		references: {
 			model: CATEGORY_TABLE,

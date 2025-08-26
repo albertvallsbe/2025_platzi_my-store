@@ -16,9 +16,7 @@ export class Category
 {
 	declare id: number;
 	declare name: string;
-	declare price: number;
 	declare image: string;
-	declare isBlock: boolean;
 	declare createdAt: Date;
 	declare updatedAt: Date;
 

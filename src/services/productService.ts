@@ -3,11 +3,13 @@ import {
 	ValidationError,
 	UniqueConstraintError,
 	DatabaseError,
+	ForeignKeyConstraintError,
 } from "sequelize";
 import Boom from "@hapi/boom";
 
 import type { Product as ProductType } from "../types/types.js";
 import { Product as ProductModel } from "../db/models/productModel.js";
+import { Category as CategoryModel } from "../db/models/categoryModel.js";
 
 export class ProductsService {
 	private products: Omit<ProductType, "id">[] = [];
@@ -39,10 +41,23 @@ export class ProductsService {
 
 	async create(data: Omit<ProductType, "id">): Promise<ProductType> {
 		try {
+			const exists = await CategoryModel.findByPk(data.categoryId);
+			if (!exists) {
+				throw Boom.badRequest(`Category ${data.categoryId} does not exist`);
+			}
+
 			const newProduct = await ProductModel.create(data);
 
 			return newProduct.toJSON() as ProductType;
 		} catch (error) {
+			if (error instanceof ForeignKeyConstraintError) {
+				throw Boom.badRequest(
+					"Invalid categoryId: referenced category does not exist"
+				);
+			}
+			if (error instanceof DatabaseError) {
+				throw Boom.badGateway("Database error while creating product");
+			}
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Product already exists");
 			}
@@ -55,7 +70,9 @@ export class ProductsService {
 
 	async find(): Promise<ProductType[]> {
 		try {
-			const products = await ProductModel.findAll();
+			const products = await ProductModel.findAll({
+				include: ["category"],
+			});
 
 			return products as ProductType[];
 		} catch (error) {
