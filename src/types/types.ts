@@ -18,6 +18,13 @@ export interface Customer {
 	createdAt: Date;
 	updatedAt: Date;
 }
+export interface Order {
+	id: number;
+	customerId: number;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
 export interface Category {
 	id: number;
 	name: string;

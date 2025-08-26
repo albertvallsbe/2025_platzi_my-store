@@ -8,7 +8,6 @@ import Boom from "@hapi/boom";
 
 import type { Category as CategoryType } from "../types/types.js";
 import { Category as CategoryModel } from "../db/models/categoryModel.js";
-// import Boom from "@hapi/boom";
 
 export class CategoryService {
 	private categories: Omit<CategoryType, "id">[] = [];
@@ -97,9 +96,9 @@ export class CategoryService {
 				updatedAt: _updatedAt,
 				...safeChanges
 			} = changes;
-			const updatedUser = await category.update(safeChanges);
+			const updatedCategory = await category.update(safeChanges);
 
-			return updatedUser.toJSON() as CategoryType;
+			return updatedCategory.toJSON() as CategoryType;
 		} catch (error) {
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Email already exists");

@@ -8,14 +8,26 @@ export default {
 		queryInterface: QueryInterface,
 		Sequelize: typeof SequelizeNS
 	): Promise<void> {
-		await queryInterface.addColumn(USER_TABLE, "role", {
-			type: Sequelize.ENUM("admin", "customer", "seller"),
-			allowNull: false,
-			defaultValue: "customer",
-		});
+		const table = await queryInterface.describeTable(USER_TABLE);
+		if (!table.role) {
+			// eslint-disable-next-line no-console
+			console.log(!table.role);
+			await queryInterface.addColumn(USER_TABLE, "role", {
+				type: Sequelize.ENUM("admin", "customer", "seller"),
+				allowNull: false,
+				defaultValue: "customer",
+			});
+		}
+		if (!table.role) {
+			// eslint-disable-next-line no-console
+			console.log(!table.role);
+		}
 	},
 
 	async down(queryInterface: QueryInterface): Promise<void> {
-		await queryInterface.removeColumn(USER_TABLE, "role");
+		const table = await queryInterface.describeTable(USER_TABLE);
+		if (table.role) {
+			await queryInterface.removeColumn(USER_TABLE, "role");
+		}
 	},
 };
