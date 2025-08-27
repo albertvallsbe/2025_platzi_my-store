@@ -45,7 +45,19 @@ export interface Product {
 	updatedAt: Date;
 }
 
+export interface OrderProduct {
+	id: number;
+	amount: number;
+	orderId: number;
+	productId: number;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
 export type ReqProperty = "body" | "params" | "query" | "headers";
+
+export type CreationAttributes = "id" | "createdAt" | "updatedAt";
+export type CreationAttributesFor<T> = Extract<CreationAttributes, keyof T>;
 
 export interface AppError extends Error {
 	statusCode?: number;

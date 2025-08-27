@@ -33,6 +33,7 @@ export class CustomerService {
 			}
 			return;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			throw Boom.badImplementation("Failed to generate customers");
 		}
 	}
@@ -45,6 +46,7 @@ export class CustomerService {
 
 			return newCustomer.toJSON() as CustomerType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Customer for this user already exists");
 			}
@@ -66,6 +68,7 @@ export class CustomerService {
 
 			return customers.map((c) => c.toJSON() as CustomerType);
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching customers");
 			}
@@ -87,6 +90,7 @@ export class CustomerService {
 
 			return customer.toJSON() as CustomerType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching customer");
 			}
@@ -117,6 +121,7 @@ export class CustomerService {
 
 			return updatedCustomer.toJSON() as CustomerType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Customer for this user already exists");
 			}
@@ -140,6 +145,7 @@ export class CustomerService {
 			await customer.destroy();
 			return;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while deleting customer");
 			}

@@ -33,6 +33,7 @@ export class CategoryService {
 			const newCategory = await CategoryModel.create(data);
 			return newCategory.toJSON() as CategoryType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Category already exists");
 			}
@@ -45,11 +46,11 @@ export class CategoryService {
 
 	async find(): Promise<CategoryType[]> {
 		try {
-			const categories = await CategoryModel.findAll({
-				include: [{ association: "customer" }],
-			});
+			const categories = await CategoryModel.findAll();
+
 			return categories as CategoryType[];
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching categories");
 			}
@@ -71,6 +72,7 @@ export class CategoryService {
 
 			return category.toJSON() as CategoryType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching category");
 			}
@@ -100,6 +102,7 @@ export class CategoryService {
 
 			return updatedCategory.toJSON() as CategoryType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Email already exists");
 			}
@@ -123,6 +126,7 @@ export class CategoryService {
 			await category.destroy();
 			return;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while deleting category");
 			}

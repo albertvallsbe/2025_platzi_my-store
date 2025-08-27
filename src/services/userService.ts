@@ -40,6 +40,7 @@ export class UserService {
 
 			return newUser.toJSON() as UserType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Email already exist");
 			}
@@ -58,6 +59,7 @@ export class UserService {
 
 			return users as UserType[];
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching users");
 			}
@@ -77,6 +79,7 @@ export class UserService {
 
 			return user.toJSON() as UserType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching user");
 			}
@@ -106,6 +109,7 @@ export class UserService {
 
 			return updatedUser.toJSON() as UserType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Email already exists");
 			}
@@ -129,6 +133,7 @@ export class UserService {
 			await user.destroy();
 			return;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while deleting user");
 			}

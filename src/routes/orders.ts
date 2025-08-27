@@ -7,6 +7,7 @@ import {
 	getOrderSchema,
 	createOrderSchema,
 	updateOrderSchema,
+	addItemSchema,
 } from "../schemas/orderSchema.js";
 
 export const ordersRouter = Router();
@@ -135,11 +136,14 @@ ordersRouter.delete(
 );
 
 ordersRouter.post(
-	"/seed",
+	"/add-item",
+	validatorHandler(addItemSchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await service.generate();
-			return res.status(201).json({ message: "Seed ok" });
+			const body = req.body;
+			const newItem = await service.addItem(body);
+
+			return res.status(201).json(newItem);
 		} catch (error) {
 			return next(error);
 		}

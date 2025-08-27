@@ -50,6 +50,7 @@ export class ProductsService {
 
 			return newProduct.toJSON() as ProductType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof ForeignKeyConstraintError) {
 				throw Boom.badRequest(
 					"Invalid categoryId: referenced category does not exist"
@@ -76,6 +77,7 @@ export class ProductsService {
 
 			return products as ProductType[];
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching products");
 			}
@@ -98,6 +100,7 @@ export class ProductsService {
 
 			return product.toJSON() as ProductType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while fetching product");
 			}
@@ -128,6 +131,7 @@ export class ProductsService {
 
 			return updatedProduct.toJSON() as ProductType;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
 				throw Boom.conflict("Product already exists");
 			}
@@ -163,6 +167,7 @@ export class ProductsService {
 			await product.destroy();
 			return;
 		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
 				throw Boom.badGateway("Database error while deleting product");
 			}
