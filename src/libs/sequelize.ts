@@ -1,15 +1,38 @@
 import { Sequelize } from "sequelize";
+import type { Options } from "sequelize";
 import { config } from "../config/config.js";
 import { setupModels } from "../db/models/index.js";
 
-const USER = encodeURIComponent(config.dbUser as string);
-const PASSWORD = encodeURIComponent(config.dbPassword as string);
-const URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+let URI: string;
 
-export const sequelize = new Sequelize(URI, {
+if (config.isProd) {
+	if (!config.dbUrl) {
+		throw new Error("DATABASE_URL is required in production");
+	}
+	URI = config.dbUrl;
+} else {
+	const USER = encodeURIComponent(config.dbUser as string);
+	const PASSWORD = encodeURIComponent(config.dbPassword as string);
+	URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+}
+
+const options: Options = {
 	dialect: "postgres",
-	logging: process.env.NODE_ENV === "development" ? console.log : false,
-});
+	logging: !config.isProd,
+};
+
+if (config.isProd) {
+	options.dialectOptions = {
+		ssl: {
+			require: true,
+			rejectUnauthorized: false,
+		},
+	};
+}
+
+// console.log("patat", options);
+
+export const sequelize = new Sequelize(URI, options);
 
 console.log("[DB cfg]", {
 	host: config.dbHost,

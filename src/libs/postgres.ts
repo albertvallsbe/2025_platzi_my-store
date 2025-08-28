@@ -1,8 +1,26 @@
 import { Pool } from "pg";
 import { config } from "../config/config.js";
 
-const USER = encodeURIComponent(config.dbUser as string);
-const PASSWORD = encodeURIComponent(config.dbPassword as string);
-const URI = `postgres://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${config.dbName}`;
+let URI: string;
+
+if (config.isProd) {
+	if (!config.dbUrl) {
+		throw new Error("DATABASE_URL is required in production");
+	}
+	URI = config.dbUrl;
+} else {
+	const { dbUser, dbPassword, dbHost, dbPort, dbName } = config;
+
+	if (!dbUser || !dbPassword || !dbHost || !dbPort || !dbName) {
+		throw new Error(
+			"Missing DB env vars: DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME"
+		);
+	}
+
+	const USER = encodeURIComponent(dbUser);
+	const PASSWORD = encodeURIComponent(dbPassword);
+
+	URI = `postgres://${USER}:${PASSWORD}@${dbHost}:${dbPort}/${dbName}`;
+}
 
 export const pool = new Pool({ connectionString: URI });

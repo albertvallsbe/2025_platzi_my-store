@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { config } from "../config/config.js";
 dotenv.config();
 
 const USER = encodeURIComponent(process.env.DB_USER || "");
@@ -15,7 +16,12 @@ export default {
 		dialect: "postgres",
 	},
 	production: {
-		url: URI,
+		url: config.dbUrl,
 		dialect: "postgres",
+		dialectOptions: {
+			ssl: {
+				rejectUnauthorized: false,
+			},
+		},
 	},
 };
