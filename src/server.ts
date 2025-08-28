@@ -1,10 +1,15 @@
 import dotenv from "dotenv";
+import "./libs/sequelize.js";
 import type { Request, Response, NextFunction } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import { app } from "./app.js";
-import { errorHandler, boomErrorHandler } from "./middlewares/errorHandler.js";
+import {
+	errorHandler,
+	boomErrorHandler,
+	ormErrorHandler,
+} from "./middlewares/errorHandler.js";
 import type { AppError } from "./types/types.js";
 
 dotenv.config();
@@ -24,6 +29,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 	next(error);
 });
 
+app.use(ormErrorHandler);
 app.use(boomErrorHandler);
 app.use(errorHandler);
 

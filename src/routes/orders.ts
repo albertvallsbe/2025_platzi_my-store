@@ -1,36 +1,34 @@
 import type { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 
-import { ProductsService } from "../services/productService.js";
+import { OrderService } from "../services/orderService.js";
 import { validatorHandler } from "../middlewares/validatorHandler.js";
 import {
-	getProductSchema,
-	createProductSchema,
-	updateProductSchema,
-	// replaceProductSchema,
-	queryParamsSchema,
-} from "../schemas/productSchema.js";
+	getOrderSchema,
+	createOrderSchema,
+	updateOrderSchema,
+	addItemSchema,
+} from "../schemas/orderSchema.js";
 
-export const productsRouter = Router();
-const service = new ProductsService();
+export const ordersRouter = Router();
+const service = new OrderService();
 
-productsRouter.get(
+ordersRouter.get(
 	"/",
-	validatorHandler(queryParamsSchema, "query"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const products = await service.find(req.query);
+			const orders = await service.find();
 
-			return res.json(products);
+			return res.json(orders);
 		} catch (error) {
 			return next(error);
 		}
 	}
 );
 
-productsRouter.get(
+ordersRouter.get(
 	"/:id",
-	validatorHandler(getProductSchema, "params"),
+	validatorHandler(getOrderSchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
@@ -47,9 +45,9 @@ productsRouter.get(
 	}
 );
 
-productsRouter.post(
+ordersRouter.post(
 	"/",
-	validatorHandler(createProductSchema, "body"),
+	validatorHandler(createOrderSchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const body = req.body;
@@ -62,10 +60,10 @@ productsRouter.post(
 	}
 );
 
-productsRouter.patch(
+ordersRouter.patch(
 	"/:id",
-	validatorHandler(getProductSchema, "params"),
-	validatorHandler(updateProductSchema, "body"),
+	validatorHandler(getOrderSchema, "params"),
+	validatorHandler(updateOrderSchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
@@ -118,9 +116,9 @@ productsRouter.patch(
 // 	}
 // );
 
-productsRouter.delete(
+ordersRouter.delete(
 	"/:id",
-	validatorHandler(getProductSchema, "params"),
+	validatorHandler(getOrderSchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const id = req.params.id;
@@ -137,12 +135,15 @@ productsRouter.delete(
 	}
 );
 
-productsRouter.post(
-	"/seed",
+ordersRouter.post(
+	"/add-item",
+	validatorHandler(addItemSchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			await service.generate();
-			return res.status(201).json({ message: "Seed ok" });
+			const body = req.body;
+			const newItem = await service.addItem(body);
+
+			return res.status(201).json(newItem);
 		} catch (error) {
 			return next(error);
 		}
