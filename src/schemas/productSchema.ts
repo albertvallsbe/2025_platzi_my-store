@@ -14,6 +14,12 @@ const image = Joi.string().uri();
 const isBlock = Joi.boolean();
 const categoryId = Joi.number().integer();
 
+const limit = Joi.number().integer().min(1);
+const offset = Joi.number().integer().min(0);
+
+const price_min = Joi.number().precision(2).positive();
+const price_max = Joi.number().precision(2).positive();
+
 export const getProductSchema = Joi.object({
 	id: id.required(),
 });
@@ -43,4 +49,16 @@ export const replaceProductSchema = Joi.object({
 	image: image.required(),
 	isBlock: isBlock.required(),
 	categoryId: categoryId.required(),
+});
+
+export const queryParamsSchema = Joi.object({
+	limit,
+	offset,
+	price,
+	price_min,
+	price_max: price_max.when("price_min", {
+		is: Joi.exist(),
+		then: price_max.required(),
+		otherwise: price_max.optional(),
+	}),
 });

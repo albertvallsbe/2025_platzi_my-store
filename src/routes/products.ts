@@ -8,6 +8,7 @@ import {
 	createProductSchema,
 	updateProductSchema,
 	// replaceProductSchema,
+	queryParamsSchema,
 } from "../schemas/productSchema.js";
 
 export const productsRouter = Router();
@@ -15,9 +16,10 @@ const service = new ProductsService();
 
 productsRouter.get(
 	"/",
+	validatorHandler(queryParamsSchema, "query"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const products = await service.find();
+			const products = await service.find(req.query);
 
 			return res.json(products);
 		} catch (error) {

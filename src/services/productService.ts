@@ -4,10 +4,11 @@ import {
 	UniqueConstraintError,
 	DatabaseError,
 	ForeignKeyConstraintError,
+	Op,
 } from "sequelize";
+import type { FindOptions } from "sequelize";
 import Boom from "@hapi/boom";
-
-import type { Product as ProductType } from "../types/types.js";
+import type { Product as ProductType, FindQuery } from "../types/types.js";
 import { Product as ProductModel } from "../db/models/productModel.js";
 import { Category as CategoryModel } from "../db/models/categoryModel.js";
 
@@ -69,11 +70,45 @@ export class ProductsService {
 		}
 	}
 
-	async find(): Promise<ProductType[]> {
+	async find(query: FindQuery = {}): Promise<ProductType[]> {
 		try {
-			const products = await ProductModel.findAll({
+			const options: FindOptions = {
 				include: ["category"],
-			});
+				where: {},
+			};
+
+			const { limit, offset } = query;
+			if (limit !== undefined) options.limit = Number(limit);
+			if (offset !== undefined) options.offset = Number(offset);
+
+			const where: Record<string, unknown> = {};
+
+			if (query.price !== undefined) {
+				const findPrice = Number(query.price);
+				if (!Number.isFinite(findPrice))
+					throw Boom.badRequest("Invalid 'price'");
+				where.price = findPrice; // o { [Op.eq]: p } si uses operadors
+			}
+
+			if (query.price_min !== undefined && query.price_max !== undefined) {
+				const findMinPrice = Number(query.price_min);
+				if (!Number.isFinite(findMinPrice))
+					throw Boom.badRequest("Invalid 'price'");
+				const findMaxPrice = Number(query.price_max);
+				if (!Number.isFinite(findMaxPrice))
+					throw Boom.badRequest("Invalid 'price'");
+
+				where.price = {
+					[Op.gte]: query.price_min,
+					[Op.lte]: query.price_max,
+				};
+			}
+
+			if (Object.keys(where).length > 0) {
+				options.where = where;
+			}
+
+			const products = await ProductModel.findAll(options);
 
 			return products as ProductType[];
 		} catch (error) {
