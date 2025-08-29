@@ -45,6 +45,15 @@ export class OrderProduct
 			modelName: "OrderProduct",
 			timestamps: true,
 			underscored: true,
+			indexes: [
+				{ fields: ["orderId"] },
+				{ fields: ["productId"] },
+				{
+					unique: true,
+					fields: ["orderId", "productId"],
+					name: "orders_products_orderId_productId_unique",
+				},
+			],
 		};
 	}
 }
@@ -62,6 +71,8 @@ export const OrderProductSchema: ModelAttributes<
 	amount: {
 		allowNull: false,
 		type: DataTypes.INTEGER,
+		defaultValue: 1,
+		validate: { min: 1 },
 	},
 	orderId: {
 		field: "order_id",
@@ -72,7 +83,7 @@ export const OrderProductSchema: ModelAttributes<
 			key: "id",
 		},
 		onUpdate: "CASCADE",
-		onDelete: "SET NULL",
+		onDelete: "CASCADE",
 	},
 	productId: {
 		field: "product_id",
@@ -83,7 +94,7 @@ export const OrderProductSchema: ModelAttributes<
 			key: "id",
 		},
 		onUpdate: "CASCADE",
-		onDelete: "SET NULL",
+		onDelete: "CASCADE",
 	},
 	createdAt: {
 		type: DataTypes.DATE,

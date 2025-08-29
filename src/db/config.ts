@@ -2,13 +2,24 @@ import dotenv from "dotenv";
 import { config } from "../config/config.js";
 dotenv.config();
 
-const USER = encodeURIComponent(process.env.DB_USER || "");
-const PASSWORD = encodeURIComponent(process.env.DB_PASSWORD || "");
-const HOST = process.env.DB_HOST || "localhost";
-const PORT = process.env.DB_PORT || "5432";
-const NAME = process.env.DB_NAME || "app";
+const buildUri = () => {
+	if (config.isProd) {
+		if (!config.dbUrl) {
+			throw new Error("DATABASE_URL is required in production");
+		}
+		return config.dbUrl;
+	}
 
-const URI = `postgres://${USER}:${PASSWORD}@${HOST}:${PORT}/${NAME}`;
+	const USER = encodeURIComponent(config.dbUser ?? "");
+	const PASSWORD = encodeURIComponent(config.dbPassword ?? "");
+	const HOST = String(config.dbHost ?? "localhost");
+	const PORT = String(config.dbPort ?? "5432");
+	const DB = String(config.dbName ?? "my_store");
+
+	return `postgres://${USER}:${PASSWORD}@${HOST}:${PORT}/${DB}`;
+};
+
+const URI = buildUri();
 
 export default {
 	development: {
@@ -16,12 +27,10 @@ export default {
 		dialect: "postgres",
 	},
 	production: {
-		url: config.dbUrl,
+		url: URI,
 		dialect: "postgres",
 		dialectOptions: {
-			ssl: {
-				rejectUnauthorized: false,
-			},
+			ssl: { require: true, rejectUnauthorized: false },
 		},
 	},
 };

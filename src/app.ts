@@ -1,12 +1,8 @@
-import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import type { CorsOptions } from "cors";
 import type { Request, Response } from "express";
 import { router } from "./routes/index.js";
-
-dotenv.config();
-const PORT = Number(process.env.PORT) || 3000;
 
 export const app = express();
 
@@ -18,23 +14,21 @@ const whitelist: string[] = [
 	"https://2025-platzi-mystore.up.railway.app",
 ];
 
-const options: CorsOptions = {
+const corsOptions: CorsOptions = {
 	origin: (origin, callback) => {
 		if (!origin || whitelist.includes(origin) || !origin) {
-			callback(null, true);
+			return callback(null, true);
 		} else {
-			callback(null, false);
+			return callback(null, false);
 		}
 	},
 };
-app.use(cors(options));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);
 // app.use("/api", router);
 
 app.get("/", (req: Request, res: Response) => {
-	res.send(`
-    Our app is running in port: ${PORT}
-    `);
+	res.send("OK");
 });

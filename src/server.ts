@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
-import "./libs/sequelize.js";
-import type { Request, Response, NextFunction } from "express";
+import { sequelize } from "./libs/sequelize.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import express from "express";
+import type { Request, Response, NextFunction } from "express";
+import Boom from "@hapi/boom";
 
 import { app } from "./app.js";
 import {
@@ -10,7 +12,7 @@ import {
 	boomErrorHandler,
 	ormErrorHandler,
 } from "./middlewares/errorHandler.js";
-import type { AppError } from "./types/types.js";
+// import type { AppError } from "./types/types.js";
 
 dotenv.config();
 
@@ -19,14 +21,16 @@ const __dirname = path.dirname(__filename);
 
 const PORT = Number(process.env.PORT) || 3000;
 
-app.get("/favicon.ico", (req: Request, res: Response) => {
-	res.sendFile(path.join(__dirname, "../src/img/favicon.ico"));
-});
+// app.get("/favicon.ico", (req: Request, res: Response) => {
+// 	res.sendFile(path.join(__dirname, "../public/img/favicon.ico"));
+// });
+
+app.set("trust proxy", 1);
+
+app.use(express.static(path.join(__dirname, "..", "./public")));
 
 app.use((req: Request, _res: Response, next: NextFunction) => {
-	const error: AppError = new Error("Not Found");
-	error.statusCode = 404;
-	next(error);
+	next(Boom.notFound(`Route ${req.method} ${req.originalUrl} not found`));
 });
 
 app.use(ormErrorHandler);
@@ -36,3 +40,13 @@ app.use(errorHandler);
 app.listen(PORT, () => {
 	console.log(`Servidor: http://localhost:${PORT}`);
 });
+
+const shutdown = async () => {
+	try {
+		await sequelize.close();
+	} finally {
+		process.exit(0);
+	}
+};
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);

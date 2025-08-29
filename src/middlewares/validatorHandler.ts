@@ -10,12 +10,12 @@ export const validatorHandler = (schema: Joi.Schema, property: ReqProperty) => {
 		const { error } = schema.validate(data, {
 			abortEarly: false,
 			stripUnknown: true,
+			convert: true,
 		});
 
 		if (error) {
-			// return next(badRequest("Validation error", { details: error.details }));
-			return next(badRequest(error));
+			return next(badRequest("Validation error", { details: error.details }));
 		}
-		next();
+		return next();
 	};
 };

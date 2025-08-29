@@ -18,7 +18,7 @@ export class Order
 	declare id: number;
 	declare customerId: number;
 	declare items?: Array<{ price: number; OrderProduct: { amount: number } }>;
-	declare total?: number;
+	// declare total?: number;
 	declare createdAt: Date;
 	declare updatedAt: Date;
 
@@ -85,20 +85,20 @@ export const OrderSchema: ModelAttributes<Order, OrderSchemaAttrs> = {
 		field: "updated_at",
 		allowNull: false,
 	},
-	total: {
-		type: DataTypes.VIRTUAL,
-		get(this: Order) {
-			const items = (this as any).items as
-				| Array<{ price: number; OrderProduct?: { amount?: number } }>
-				| undefined;
+	// total: {
+	// 	type: DataTypes.VIRTUAL,
+	// 	get(this: Order) {
+	// 		const items = (this as any).items as
+	// 			| Array<{ price: number; OrderProduct?: { amount?: number } }>
+	// 			| undefined;
 
-			if (!items || items.length === 0) return 0;
+	// 		if (!items || items.length === 0) return 0;
 
-			return items.reduce((sum: number, item) => {
-				const price = Number(item.price) || 0;
-				const amount = Number(item.OrderProduct?.amount) || 0;
-				return sum + price * amount;
-			}, 0);
-		},
-	},
+	// 		return items.reduce((sum: number, item) => {
+	// 			const price = Number(item.price) || 0;
+	// 			const amount = Number(item.OrderProduct?.amount) || 0;
+	// 			return sum + price * amount;
+	// 		}, 0);
+	// 	},
+	// },
 };
