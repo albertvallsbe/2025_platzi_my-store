@@ -12,7 +12,6 @@ import {
 	boomErrorHandler,
 	ormErrorHandler,
 } from "./middlewares/errorHandler.js";
-// import type { AppError } from "./types/types.js";
 
 dotenv.config();
 
@@ -21,11 +20,11 @@ const __dirname = path.dirname(__filename);
 
 const PORT = Number(process.env.PORT) || 3000;
 
+app.set("trust proxy", 1);
+
 // app.get("/favicon.ico", (req: Request, res: Response) => {
 // 	res.sendFile(path.join(__dirname, "../public/img/favicon.ico"));
 // });
-
-app.set("trust proxy", 1);
 
 app.use(express.static(path.join(__dirname, "..", "./public")));
 
