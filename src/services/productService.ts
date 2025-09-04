@@ -36,7 +36,10 @@ export class ProductsService {
 			}
 			return;
 		} catch (error) {
-			throw Boom.badImplementation("Failed to generate products");
+			if (Boom.isBoom(error)) throw error;
+			throw Boom.badImplementation("Failed to generate products", {
+				cause: error,
+			});
 		}
 	}
 
@@ -54,7 +57,7 @@ export class ProductsService {
 			if (Boom.isBoom(error)) throw error;
 			if (error instanceof ForeignKeyConstraintError) {
 				throw Boom.badRequest(
-					"Invalid categoryId: referenced category does not exist"
+					"Invalid categoryId: referenced category does not exist",
 				);
 			}
 			if (error instanceof DatabaseError) {
@@ -148,7 +151,7 @@ export class ProductsService {
 
 	async updatePatch(
 		id: string,
-		changes: Partial<Omit<ProductType, "id">>
+		changes: Partial<Omit<ProductType, "id">>,
 	): Promise<ProductType> {
 		try {
 			const product = await ProductModel.findByPk(id);

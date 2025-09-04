@@ -2,7 +2,9 @@ import express from "express";
 import cors from "cors";
 import type { CorsOptions } from "cors";
 import type { Request, Response } from "express";
+
 import { router } from "./routes/index.js";
+import { checkApiKey } from "./middlewares/authHandler.js";
 
 export const app = express();
 
@@ -24,6 +26,12 @@ const corsOptions: CorsOptions = {
 	},
 };
 app.use(cors(corsOptions));
+import "./auth/index.js";
+
+app.get("/new-route", checkApiKey, (req: Request, res: Response) => {
+	res.send("Hello");
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);

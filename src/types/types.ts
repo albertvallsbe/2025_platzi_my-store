@@ -8,6 +8,14 @@ export interface User {
 	updatedAt: Date;
 }
 
+export type SafeUser = Omit<User, "password" | "createdAt" | "updatedAt">;
+export type AuthUser = Pick<User, "id" | "email" | "role">;
+
+export type userJwtPayload = {
+	sub: string;
+	role: UserRole;
+};
+
 export interface Customer {
 	id: number;
 	name: string;
