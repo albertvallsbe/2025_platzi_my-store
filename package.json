@@ -13,6 +13,8 @@
 		"format": "prettier --write .",
 		"typecheck": "tsc --noEmit",
 		"migrations:generate": "sequelize-cli migration:generate --name",
+		"migrations:generate:seeds": "sequelize-cli seed:generate --name",
+		"migrations:seeds:run": "sequelize-cli db:seed:all --seeders-path dist/db/seeders",
 		"migrations:run": "sequelize-cli db:migrate --migrations-path dist/db/migrations",
 		"migrations:revert": "sequelize-cli db:migrate:undo --migrations-path dist/db/migrations",
 		"migrations:delete": "sequelize-cli db:migrate:undo:all --migrations-path dist/db/migrations"

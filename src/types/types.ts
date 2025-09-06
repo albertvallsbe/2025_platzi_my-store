@@ -3,17 +3,21 @@ export interface User {
 	id: number;
 	email: string;
 	password: string;
+	recoveryToken?: string | null;
 	role: UserRole;
 	createdAt: Date;
 	updatedAt: Date;
 }
 
-export type SafeUser = Omit<User, "password" | "createdAt" | "updatedAt">;
+export type SafeUser = Omit<
+	User,
+	"password" | "recoveryToken" | "createdAt" | "updatedAt"
+>;
 export type AuthUser = Pick<User, "id" | "email" | "role">;
 
 export type userJwtPayload = {
 	sub: string;
-	role: UserRole;
+	role?: UserRole;
 };
 
 export interface Customer {

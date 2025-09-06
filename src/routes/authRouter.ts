@@ -48,7 +48,28 @@ authRouter.post(
 				return next(Boom.badRequest("Email is required"));
 			}
 
-			const recovery = await service.sendMail(email);
+			const recovery = await service.sendRecovery(email);
+			return res.json(recovery);
+		} catch (error) {
+			return next(error);
+		}
+	},
+);
+
+authRouter.post(
+	"/change-password",
+	async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { token, newPassword } = req.body;
+
+			if (!token) {
+				return next(Boom.badRequest("Token is required"));
+			}
+			if (!newPassword) {
+				return next(Boom.badRequest("New password is required"));
+			}
+
+			const recovery = await service.changePassword(token, newPassword);
 			return res.json(recovery);
 		} catch (error) {
 			return next(error);

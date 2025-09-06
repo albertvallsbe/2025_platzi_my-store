@@ -7,8 +7,8 @@ import {
 import Boom from "@hapi/boom";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-import { google } from "googleapis";
+// import nodemailer from "nodemailer";
+// import { google } from "googleapis";
 
 import { config } from "./../config/config.js";
 import type {
@@ -18,6 +18,9 @@ import type {
 } from "../types/types.js";
 
 import { UserService } from "../services/userService.js";
+import { sendMail as sendMailReusable } from "../libs/mailer.js";
+import type { SendMailOptions } from "nodemailer";
+
 const service = new UserService();
 
 export class AuthService {
@@ -25,7 +28,7 @@ export class AuthService {
 		try {
 			const user = await service.findByEmail(email);
 			if (!user) {
-				throw Boom.notFound(`User ${email} not found`);
+				throw Boom.notFound("User not found");
 			}
 
 			const isMatch = await bcrypt.compare(password, user.password);
@@ -49,7 +52,7 @@ export class AuthService {
 	signToken(user: UserType) {
 		try {
 			if (!user) {
-				throw Boom.notFound(`User ${user} not found`);
+				throw Boom.notFound("User not found");
 			}
 
 			const { id, role, email } = user as UserType;
@@ -84,51 +87,36 @@ export class AuthService {
 		}
 	}
 
-	async sendMail(email: string) {
+	async sendRecovery(email: string) {
 		try {
 			const user = await service.findByEmail(email);
 			if (!user) {
-				throw Boom.notFound(`User ${email} not found`);
+				throw Boom.notFound("User  not found");
 			}
 
-			const CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
-			const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET as string;
-			const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN as string;
-			const USER = process.env.GOOGLE_USER as string;
+			const JWT_SECRET = config.jwtSecret;
+			if (!JWT_SECRET) {
+				throw Boom.badImplementation("Missing JWT_SECRET");
+			}
 
-			const REDIRECT_URI = "https://developers.google.com/oauthplayground";
+			const { id, email: userEmail } = user as UserType;
+			const payload: userJwtPayload = {
+				sub: String(id),
+			};
 
-			const oAuth2Client = new google.auth.OAuth2(
-				CLIENT_ID,
-				CLIENT_SECRET,
-				REDIRECT_URI,
-			);
+			const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
 
-			oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+			await service.updatePatch(String(id), { recoveryToken: token });
+			const link = `http://localhost:3100/recovery?token=${token}`;
 
-			const accessToken = await oAuth2Client.getAccessToken();
-
-			const transporter = nodemailer.createTransport({
-				service: "gmail",
-				auth: {
-					type: "OAuth2",
-					user: USER,
-					clientId: CLIENT_ID,
-					clientSecret: CLIENT_SECRET,
-					refreshToken: REFRESH_TOKEN,
-					accessToken: accessToken.token as string,
-				},
-			});
-
-			await transporter.sendMail({
-				from: `MyStore App <${USER}>`,
-				to: USER,
+			const mail: SendMailOptions = {
+				to: userEmail,
 				subject: "Aquest es un correu nou",
-				text: "Hola user @",
-				html: "<b>Hola @</b>",
-			});
+				html: `<b>Ingresa a aquest link=> ${link}</b>`,
+			};
 
-			return { message: "mail sent" };
+			const resposta = await sendMailReusable(mail);
+			return resposta;
 		} catch (error) {
 			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
@@ -138,6 +126,45 @@ export class AuthService {
 				throw Boom.badRequest(error.message);
 			}
 			throw Boom.badImplementation("Failed to fetch user");
+		}
+	}
+
+	async changePassword(token: string, newPassword: string) {
+		try {
+			const JWT_SECRET = config.jwtSecret;
+			if (!JWT_SECRET) {
+				throw Boom.badImplementation("Missing JWT_SECRET");
+			}
+
+			const payload = jwt.verify(token, JWT_SECRET);
+
+			const { sub } = payload as userJwtPayload;
+
+			const user = await service.findById(sub);
+			if (!user) {
+				throw Boom.notFound("User not found");
+			}
+
+			if (user.recoveryToken !== token) {
+				throw Boom.unauthorized();
+			}
+
+			const hash = await bcrypt.hash(newPassword, 10);
+
+			await service.updatePatch(String(user.id), {
+				recoveryToken: null,
+				password: hash,
+			});
+			return { message: "password changed " };
+		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
+			if (error instanceof DatabaseError) {
+				throw Boom.badGateway("Database error while changing password");
+			}
+			if (error instanceof ValidationError) {
+				throw Boom.badRequest(error.message);
+			}
+			throw Boom.badImplementation("Failed to change password");
 		}
 	}
 }
