@@ -1,12 +1,11 @@
 import nodemailer, { type SendMailOptions } from "nodemailer";
 import { google } from "googleapis";
+import { config } from "../config/config.js";
 
-const {
-	GOOGLE_CLIENT_ID,
-	GOOGLE_CLIENT_SECRET,
-	GOOGLE_REFRESH_TOKEN,
-	GOOGLE_USER,
-} = process.env;
+const GOOGLE_CLIENT_ID = config.googleClientId ?? "";
+const GOOGLE_CLIENT_SECRET = config.googleClientSecret ?? "";
+const GOOGLE_REFRESH_TOKEN = config.googleRefreshToken ?? "";
+const GOOGLE_USER = config.googleUser ?? "";
 
 if (
 	!GOOGLE_CLIENT_ID ||

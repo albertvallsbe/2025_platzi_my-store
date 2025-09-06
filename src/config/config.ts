@@ -13,4 +13,8 @@ export const config = {
 	dbUrl: process.env.DATABASE_URL,
 	jwtSecret: process.env.JWT_SECRET,
 	apiKey: process.env.API_KEY,
+	googleClientId: process.env.GOOGLE_CLIENT_ID,
+	googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
+	googleRefreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+	googleUser: process.env.GOOGLE_USER,
 };
