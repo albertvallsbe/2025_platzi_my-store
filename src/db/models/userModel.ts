@@ -16,6 +16,7 @@ export class User
 	declare id: number;
 	declare email: string;
 	declare password: string;
+	declare recoveryToken: string | null;
 	declare role: UserRole;
 	declare createdAt: Date;
 	declare updatedAt: Date;
@@ -53,6 +54,11 @@ export const UserSchema: ModelAttributes<User, UserType> = {
 	password: {
 		type: DataTypes.STRING,
 		allowNull: false,
+	},
+	recoveryToken: {
+		field: "recovery_token",
+		type: DataTypes.STRING,
+		allowNull: true,
 	},
 	role: {
 		type: DataTypes.ENUM("admin", "customer", "seller"),

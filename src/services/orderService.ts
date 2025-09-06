@@ -4,11 +4,14 @@ import {
 	UniqueConstraintError,
 	DatabaseError,
 	ForeignKeyConstraintError,
+	col,
+	where,
 } from "sequelize";
 import Boom from "@hapi/boom";
 
 import type {
 	Order as OrderType,
+	// Customer as CustomerType,
 	OrderProduct as OrderProductType,
 } from "../types/types.js";
 import { Order as OrderModel } from "../db/models/orderModel.js";
@@ -76,7 +79,7 @@ export class OrderService {
 			if (Boom.isBoom(error)) throw error;
 			if (error instanceof ForeignKeyConstraintError) {
 				throw Boom.badRequest(
-					"Invalid productId or orderId: referenced record does not exist"
+					"Invalid productId or orderId: referenced record does not exist",
 				);
 			}
 			if (error instanceof UniqueConstraintError) {
@@ -136,9 +139,38 @@ export class OrderService {
 		}
 	}
 
+	async findByUser(id: string): Promise<OrderType[]> {
+		try {
+			const orders = await OrderModel.findAll({
+				where: where(col("customer.user.id"), id),
+				include: [
+					{
+						association: "customer",
+						required: true,
+						include: ["user"],
+					},
+				],
+			});
+			if (!orders) {
+				throw Boom.notFound(`User ${id} not found`);
+			}
+
+			return orders as OrderType[];
+		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
+			if (error instanceof DatabaseError) {
+				throw Boom.badGateway("Database error while fetching order");
+			}
+			if (error instanceof ValidationError) {
+				throw Boom.badRequest(error.message);
+			}
+			throw Boom.badImplementation("Failed to fetch order");
+		}
+	}
+
 	async updatePatch(
 		id: string,
-		changes: Partial<Omit<OrderType, "id">>
+		changes: Partial<Omit<OrderType, "id">>,
 	): Promise<OrderType> {
 		try {
 			const order = await OrderModel.findByPk(id);

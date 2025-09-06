@@ -5,6 +5,7 @@ import {
 	DatabaseError,
 } from "sequelize";
 import Boom from "@hapi/boom";
+import bcrypt from "bcrypt";
 
 import type { User as UserType } from "../types/types.js";
 import { User as UserModel } from "../db/models/userModel.js";
@@ -30,15 +31,25 @@ export class UserService {
 			}
 			return;
 		} catch (error) {
-			throw Boom.badImplementation("Failed to generate users");
+			if (Boom.isBoom(error)) throw error;
+			throw Boom.badImplementation("Failed to generate users", {
+				cause: error,
+			});
 		}
 	}
 
 	async create(data: Omit<UserType, "id">): Promise<UserType> {
 		try {
-			const newUser = await UserModel.create(data);
+			const hash = await bcrypt.hash(data.password, 10);
 
-			return newUser.toJSON() as UserType;
+			const newUser = await UserModel.create({
+				...data,
+				password: hash,
+			});
+
+			const { password: _drop, ...safeUser } = newUser.toJSON();
+
+			return safeUser as UserType;
 		} catch (error) {
 			if (Boom.isBoom(error)) throw error;
 			if (error instanceof UniqueConstraintError) {
@@ -58,6 +69,25 @@ export class UserService {
 			});
 
 			return users as UserType[];
+		} catch (error) {
+			if (Boom.isBoom(error)) throw error;
+			if (error instanceof DatabaseError) {
+				throw Boom.badGateway("Database error while fetching users");
+			}
+			if (error instanceof ValidationError) {
+				throw Boom.badRequest(error.message);
+			}
+			throw Boom.badImplementation("Failed to fetch users");
+		}
+	}
+
+	async findByEmail(email: string): Promise<UserType> {
+		try {
+			const user = await UserModel.findOne({
+				where: { email },
+			});
+
+			return user as UserType;
 		} catch (error) {
 			if (Boom.isBoom(error)) throw error;
 			if (error instanceof DatabaseError) {
@@ -92,7 +122,7 @@ export class UserService {
 
 	async updatePatch(
 		id: string,
-		changes: Partial<Omit<UserType, "id">>
+		changes: Partial<Omit<UserType, "id">>,
 	): Promise<UserType> {
 		try {
 			const user = await UserModel.findByPk(id);

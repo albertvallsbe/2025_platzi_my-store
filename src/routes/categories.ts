@@ -1,8 +1,11 @@
 import type { Request, Response, NextFunction } from "express";
+import passport from "passport";
+
 import { Router } from "express";
 
 import { CategoryService } from "../services/categoryService.js";
 import { validatorHandler } from "../middlewares/validatorHandler.js";
+import { checkRoles } from "../middlewares/authHandler.js";
 import {
 	getCategorySchema,
 	createCategorySchema,
@@ -14,6 +17,8 @@ const service = new CategoryService();
 
 categoriesRouter.get(
 	"/",
+	passport.authenticate("jwt", { session: false }),
+	checkRoles("admin", "seller", "customer"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const categories = await service.find();
@@ -22,11 +27,13 @@ categoriesRouter.get(
 		} catch (error) {
 			return next(error);
 		}
-	}
+	},
 );
 
 categoriesRouter.get(
 	"/:id",
+	passport.authenticate("jwt", { session: false }),
+	checkRoles("admin", "seller", "customer"),
 	validatorHandler(getCategorySchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -41,11 +48,13 @@ categoriesRouter.get(
 		} catch (error) {
 			return next(error);
 		}
-	}
+	},
 );
 
 categoriesRouter.post(
 	"/",
+	passport.authenticate("jwt", { session: false }),
+	checkRoles("admin", "seller"),
 	validatorHandler(createCategorySchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -56,11 +65,13 @@ categoriesRouter.post(
 		} catch (error) {
 			return next(error);
 		}
-	}
+	},
 );
 
 categoriesRouter.patch(
 	"/:id",
+	passport.authenticate("jwt", { session: false }),
+	checkRoles("admin", "seller"),
 	validatorHandler(getCategorySchema, "params"),
 	validatorHandler(updateCategorySchema, "body"),
 	async (req: Request, res: Response, next: NextFunction) => {
@@ -77,11 +88,13 @@ categoriesRouter.patch(
 		} catch (error) {
 			return next(error);
 		}
-	}
+	},
 );
 
 categoriesRouter.delete(
 	"/:id",
+	passport.authenticate("jwt", { session: false }),
+	checkRoles("admin", "seller"),
 	validatorHandler(getCategorySchema, "params"),
 	async (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -96,5 +109,5 @@ categoriesRouter.delete(
 		} catch (error) {
 			return next(error);
 		}
-	}
+	},
 );
