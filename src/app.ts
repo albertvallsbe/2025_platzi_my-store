@@ -13,7 +13,7 @@ const whitelist: string[] = [
 	"http://127.0.0.1:3100",
 	"http://localhost:5500",
 	"http://127.0.0.1:5500",
-	"https://2025-platzi-mystore.up.railway.app",
+	"https://2025-shoppyis.up.railway.app",
 	// Vite dev + preview
 	"http://localhost:5173",
 	"http://127.0.0.1:5173",
