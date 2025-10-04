@@ -15,7 +15,7 @@ const buildUri = () => {
 	const PASSWORD = encodeURIComponent(config.dbPassword ?? "");
 	const HOST = String(config.dbHost ?? "localhost");
 	const PORT = String(config.dbPort ?? "5432");
-	const DB = String(config.dbName ?? "my_store");
+	const DB = String(config.dbName ?? "shoppyis");
 
 	return `postgres://${USER}:${PASSWORD}@${HOST}:${PORT}/${DB}`;
 };
@@ -24,7 +24,7 @@ const URI = buildUri();
 
 const options: Options = {
 	dialect: "postgres",
-	logging: !config.isProd,
+	logging: false,
 	benchmark: !config.isProd,
 	pool: { max: 10, min: 0, acquire: 60_000, idle: 10_000 },
 };
