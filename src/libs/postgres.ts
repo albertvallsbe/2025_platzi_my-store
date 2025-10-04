@@ -1,26 +1,36 @@
-import { Pool } from "pg";
+import dotenv from "dotenv";
 import { config } from "../config/config.js";
+dotenv.config();
 
-let URI: string;
-
-if (config.isProd) {
-	if (!config.dbUrl) {
-		throw new Error("DATABASE_URL is required in production");
-	}
-	URI = config.dbUrl;
-} else {
-	const { dbUser, dbPassword, dbHost, dbPort, dbName } = config;
-
-	if (!dbUser || !dbPassword || !dbHost || !dbPort || !dbName) {
-		throw new Error(
-			"Missing DB env vars: DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME"
-		);
+const buildUri = () => {
+	if (config.isProd) {
+		if (!config.databaseUrl) {
+			throw new Error("DATABASE_URL is required in production");
+		}
+		return config.databaseUrl;
 	}
 
-	const USER = encodeURIComponent(dbUser);
-	const PASSWORD = encodeURIComponent(dbPassword);
+	const USER = encodeURIComponent(config.dbUser ?? "");
+	const PASSWORD = encodeURIComponent(config.dbPassword ?? "");
+	const HOST = String(config.dbHost ?? "localhost");
+	const PORT = String(config.dbPort ?? "5432");
+	const DB = String(config.dbName ?? "my_store");
 
-	URI = `postgres://${USER}:${PASSWORD}@${dbHost}:${dbPort}/${dbName}`;
-}
+	return `postgres://${USER}:${PASSWORD}@${HOST}:${PORT}/${DB}`;
+};
 
-export const pool = new Pool({ connectionString: URI });
+const URI = buildUri();
+
+export default {
+	development: {
+		url: URI,
+		dialect: "postgres",
+	},
+	production: {
+		url: URI,
+		dialect: "postgres",
+		dialectOptions: {
+			ssl: { require: true, rejectUnauthorized: false },
+		},
+	},
+};

@@ -1,4 +1,7 @@
+import dns from "node:dns";
+dns.setDefaultResultOrder("ipv4first");
 import dotenv from "dotenv";
+dotenv.config();
 import { sequelize } from "./libs/sequelize.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,12 +16,8 @@ import {
 	ormErrorHandler,
 } from "./middlewares/errorHandler.js";
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const PORT = Number(process.env.PORT) || 3000;
 
 app.set("trust proxy", 1);
 
@@ -32,13 +31,9 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 	next(Boom.notFound(`Route ${req.method} ${req.originalUrl} not found`));
 });
 
-app.use(ormErrorHandler);
 app.use(boomErrorHandler);
+app.use(ormErrorHandler);
 app.use(errorHandler);
-
-app.listen(PORT, () => {
-	console.log(`Servidor: http://localhost:${PORT}`);
-});
 
 const shutdown = async () => {
 	try {

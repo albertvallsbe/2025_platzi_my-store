@@ -1,24 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
 import passport from "passport";
-// import jwt from "jsonwebtoken";
 import Boom from "@hapi/boom";
 import { Router } from "express";
 
-import { config } from "../config/config.js";
-import type {
-	// AuthUser,
-	User as UserType,
-	// userJwtPayload,
-} from "../types/types.js";
+import type { User as UserType } from "../types/types.js";
 import { AuthService } from "../services/authService.js";
 
 export const authRouter = Router();
 const service = new AuthService();
-
-const JWT_SECRET = config.jwtSecret;
-if (!JWT_SECRET) {
-	throw Boom.badImplementation("Missing JWT_SECRET");
-}
 
 authRouter.post(
 	"/login",
@@ -49,9 +38,21 @@ authRouter.post(
 			}
 
 			const recovery = await service.sendRecovery(email);
+
 			return res.json(recovery);
+			// return res.status(202).json({
+			// 	message: "If the email exists, a recovery link will be sent.",
+			// });
 		} catch (error) {
-			return next(error);
+			if (Boom.isBoom(error) && error.output?.statusCode === 404) {
+				return next(Boom.badRequest("Invalid recovery request"));
+			}
+
+			if (Boom.isBoom(error)) {
+				return next(error);
+			}
+
+			return next(Boom.badGateway("Failed to send recovery email"));
 		}
 	},
 );
